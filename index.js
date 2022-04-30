@@ -2,6 +2,7 @@ const fileTalker = './talker.json';
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const app = express();
 app.use(bodyParser.json());
@@ -44,4 +45,15 @@ app.get('/talker/:id', (req, res) => {
     return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
   }
     return res.status(HTTP_OK_STATUS).json(chosenId);
+});
+
+// 3 - Crie o endpoint POST /login
+// O endpoint deverá receber no corpo da requisição os campos email e password e retornar um token aleatório de 16 caracteres. Este token será utilizado pelas requisições dos próximos requisitos do projeto.
+
+app.post('/login', (req, res) => {
+  const data = fs.readFileSync(fileTalker, 'utf8');
+  const token = crypto.randomBytes(8).toString('hex');
+  
+    res.status(HTTP_OK_STATUS).json({ token: token});
+    console.log(data);
 });
