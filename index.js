@@ -3,7 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const crypto = require('crypto');
-const validateToken = require('./middleware/validateToken');
+const validatePassword = require('./middleware/validatePassword');
+const validateEmail = require('./middleware/validateEmail');
 
 const data = fs.readFileSync(fileTalker, 'utf8');
 const app = express();
@@ -52,7 +53,7 @@ app.get('/talker/:id', (req, res) => {
 // 4 - Adicione as validações para o endpoint /login
 // Os campos recebidos pela requisição devem ser validados e, caso os valores sejam inválidos, o endpoint deve retornar o código de status 400 com a respectiva mensagem de erro ao invés do token.
 
-app.post('/login', validateToken, (req, res) => {
+app.post('/login', validateEmail, validatePassword, (req, res) => {
   const token = crypto.randomBytes(8).toString('hex');
   
    return res.status(HTTP_OK_STATUS).json({ token });
@@ -65,7 +66,7 @@ app.post('/talker', (req, res) => {
 
   if (!authorization) {
     console.log('Voce não tem autorização');
-    return res.status(401).json({ message: 'Voce não tem autorização' }).end();
+    return res.status(401).json({ message: 'Voce não tem autorização' });
   }
   console.log('DEU TUDO CERTO');
     return res.status(HTTP_OK_STATUS).json({ message: 'DEU TUDO CERTO' });
