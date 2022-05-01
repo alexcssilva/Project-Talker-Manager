@@ -3,7 +3,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const crypto = require('crypto');
-const { validatePassword, validateEmail, validateToken } = require('./middleware/validateToken');
+const { 
+  validatePassword, 
+  validateEmail, 
+  validateAuthorization,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateRate,
+  validateWatcheAt,
+  } = require('./middleware/validateToken');
 
 const data = fs.readFileSync(fileTalker, 'utf8');
 const app = express();
@@ -52,10 +61,38 @@ app.get('/talker/:id', (req, res) => {
 // 4 - Adicione as validações para o endpoint /login
 // Os campos recebidos pela requisição devem ser validados e, caso os valores sejam inválidos, o endpoint deve retornar o código de status 400 com a respectiva mensagem de erro ao invés do token.
 
-app.post('/login', validateEmail, validatePassword, (req, res) => {
+app.post('/login',
+  validateEmail,
+  validatePassword,
+  (_req, res) => {
   const token = crypto.randomBytes(8).toString('hex');
   
    return res.status(HTTP_OK_STATUS).json({ token });
 });
 
 // 5 - Crie o endpoint POST /talker
+
+app.post('/talker',
+  validateAuthorization,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateWatcheAt,
+  validateRate,
+  (req, res) => {
+  const { name, age, talk } = req.body;
+  const file = JSON.parse(data);
+  
+  const objUser = {
+    name,
+    age,
+    id: file.length + 1,
+    talk,
+  };
+
+  const arrayTalker = [...file, objUser];
+  
+  fs.writeFileSync(fileTalker, JSON.stringify(arrayTalker));
+
+    return res.status(201).json(objUser);
+  });
