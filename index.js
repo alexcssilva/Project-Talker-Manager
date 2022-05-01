@@ -3,8 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const crypto = require('crypto');
-const validatePassword = require('./middleware/validatePassword');
-const validateEmail = require('./middleware/validateEmail');
+const { validatePassword, validateEmail, validateToken } = require('./middleware/validateToken');
 
 const data = fs.readFileSync(fileTalker, 'utf8');
 const app = express();
@@ -60,14 +59,3 @@ app.post('/login', validateEmail, validatePassword, (req, res) => {
 });
 
 // 5 - Crie o endpoint POST /talker
-
-app.post('/talker', (req, res) => {
-  const { authorization } = req.headers;
-
-  if (!authorization) {
-    console.log('Voce não tem autorização');
-    return res.status(401).json({ message: 'Voce não tem autorização' });
-  }
-  console.log('DEU TUDO CERTO');
-    return res.status(HTTP_OK_STATUS).json({ message: 'DEU TUDO CERTO' });
-});
