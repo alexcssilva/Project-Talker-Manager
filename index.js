@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const crypto = require('crypto');
+const validateToken = require('./middleware/validateToken');
 
 const app = express();
 app.use(bodyParser.json());
@@ -50,10 +51,13 @@ app.get('/talker/:id', (req, res) => {
 // 3 - Crie o endpoint POST /login
 // O endpoint deverá receber no corpo da requisição os campos email e password e retornar um token aleatório de 16 caracteres. Este token será utilizado pelas requisições dos próximos requisitos do projeto.
 
-app.post('/login', (req, res) => {
+app.post('/login', validateToken, (req, res) => {
   const data = fs.readFileSync(fileTalker, 'utf8');
   const token = crypto.randomBytes(8).toString('hex');
   
-    res.status(HTTP_OK_STATUS).json({ token: token});
+    res.status(HTTP_OK_STATUS).json({ token });
     console.log(data);
 });
+
+// 4 - Adicione as validações para o endpoint /login
+// Os campos recebidos pela requisição devem ser validados e, caso os valores sejam inválidos, o endpoint deve retornar o código de status 400 com a respectiva mensagem de erro ao invés do token.
