@@ -14,7 +14,6 @@ const {
   validateWatcheAt,
   } = require('./middleware/validateToken');
 
-const data = fs.readFileSync(fileTalker, 'utf8');
 const app = express();
 app.use(bodyParser.json());
 
@@ -35,17 +34,18 @@ app.listen(PORT, () => {
 // O endpoint deve retornar um array com todas as pessoas palestrantes cadastradas. Devendo retornar o status 200, com o seguinte corpo:
 
 app.get('/talker', (req, res) => {
-    res.status(HTTP_OK_STATUS).json(JSON.parse(data));
-    console.log(data);
+  const data = fs.readFileSync(fileTalker, 'utf8');
+
+    res.status(200).json(JSON.parse(data));
 });
 
 // 2 - Crie o endpoint GET /talker/:id
 // O endpoint deve retornar uma pessoa palestrante com base no id da rota. Devendo retornar o status 200 ao fazer uma requisição /talker/1, com o seguinte corpo:
 
 app.get('/talker/:id', (req, res) => {
-  const { id } = req.params;
-
+  const data = fs.readFileSync(fileTalker, 'utf8');
   const fileContent = JSON.parse(data);
+  const { id } = req.params;
 
   const chosenId = fileContent.find((params) => params.id === parseInt(id, 0));
 
@@ -81,6 +81,7 @@ app.post('/talker',
   validateRate,
   (req, res) => {
   const { name, age, talk } = req.body;
+  const data = fs.readFileSync(fileTalker, 'utf8');
   const file = JSON.parse(data);
   
   const objUser = {
@@ -95,4 +96,34 @@ app.post('/talker',
   fs.writeFileSync(fileTalker, JSON.stringify(arrayTalker));
 
     return res.status(201).json(objUser);
+  });
+
+  // 6 - Crie o endpoint PUT /talker/:id
+
+  app.put('/talker/:id', 
+  validateAuthorization,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateWatcheAt,
+  validateRate,
+    (req, res) => {
+    const data = fs.readFileSync(fileTalker, 'utf8');
+    const file = JSON.parse(data);
+    const { id } = req.params;
+    const chosenId = file.find((params) => params.id === parseInt(id, 0));
+    const { name, age, talk } = req.body;
+    
+    const a = [file[chosenId] = { ...file[chosenId], name, age, talk, id: parseInt(id, 0) }];
+
+    const objUser = {
+      name,
+      age,
+      id: parseInt(id, 0),
+      talk,
+    };
+    
+    fs.writeFileSync(fileTalker, JSON.stringify(a));
+
+    return res.status(HTTP_OK_STATUS).json(objUser);
   });
