@@ -5,6 +5,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const validateToken = require('./middleware/validateToken');
 
+const data = fs.readFileSync(fileTalker, 'utf8');
 const app = express();
 app.use(bodyParser.json());
 
@@ -25,8 +26,6 @@ app.listen(PORT, () => {
 // O endpoint deve retornar um array com todas as pessoas palestrantes cadastradas. Devendo retornar o status 200, com o seguinte corpo:
 
 app.get('/talker', (req, res) => {
-  const data = fs.readFileSync(fileTalker, 'utf8');
-
     res.status(HTTP_OK_STATUS).json(JSON.parse(data));
     console.log(data);
 });
@@ -36,7 +35,6 @@ app.get('/talker', (req, res) => {
 
 app.get('/talker/:id', (req, res) => {
   const { id } = req.params;
-  const data = fs.readFileSync(fileTalker, 'utf8');
 
   const fileContent = JSON.parse(data);
 
@@ -51,13 +49,24 @@ app.get('/talker/:id', (req, res) => {
 // 3 - Crie o endpoint POST /login
 // O endpoint deverá receber no corpo da requisição os campos email e password e retornar um token aleatório de 16 caracteres. Este token será utilizado pelas requisições dos próximos requisitos do projeto.
 
-app.post('/login', validateToken, (req, res) => {
-  const data = fs.readFileSync(fileTalker, 'utf8');
-  const token = crypto.randomBytes(8).toString('hex');
-  
-    res.status(HTTP_OK_STATUS).json({ token });
-    console.log(data);
-});
-
 // 4 - Adicione as validações para o endpoint /login
 // Os campos recebidos pela requisição devem ser validados e, caso os valores sejam inválidos, o endpoint deve retornar o código de status 400 com a respectiva mensagem de erro ao invés do token.
+
+app.post('/login', validateToken, (req, res) => {
+  const token = crypto.randomBytes(8).toString('hex');
+  
+   return res.status(HTTP_OK_STATUS).json({ token });
+});
+
+// 5 - Crie o endpoint POST /talker
+
+app.post('/talker', (req, res) => {
+  const { authorization } = req.headers;
+
+  if (!authorization) {
+    console.log('Voce não tem autorização');
+    return res.status(401).json({ message: 'Voce não tem autorização' }).end();
+  }
+  console.log('DEU TUDO CERTO');
+    return res.status(HTTP_OK_STATUS).json({ message: 'DEU TUDO CERTO' });
+});
