@@ -127,3 +127,16 @@ app.post('/talker',
 
     return res.status(HTTP_OK_STATUS).json(objUser);
   });
+
+  // 7 - Crie o endpoint DELETE /talker/:id
+
+  app.delete('/talker/:id', validateAuthorization, (req, res) => {
+    const data = fs.readFileSync(fileTalker, 'utf8');
+    const file = JSON.parse(data);
+    const { id } = req.params;
+    const chosenId = file.find((params) => params.id === parseInt(id, 0));
+
+    fs.writeFileSync(fileTalker, JSON.stringify(file.slice(chosenId, 1)));
+
+    return res.status(204).end;
+  });
