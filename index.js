@@ -114,7 +114,8 @@ app.post('/talker',
     const chosenId = file.find((params) => params.id === parseInt(id, 0));
     const { name, age, talk } = req.body;
     
-    const a = [file[chosenId] = { ...file[chosenId], name, age, talk, id: parseInt(id, 0) }];
+    const updateArray = [
+      file[chosenId] = { ...file[chosenId], name, age, talk, id: parseInt(id, 0) }];
 
     const objUser = {
       name,
@@ -122,8 +123,7 @@ app.post('/talker',
       id: parseInt(id, 0),
       talk,
     };
-    
-    fs.writeFileSync(fileTalker, JSON.stringify(a));
+    fs.writeFileSync(fileTalker, JSON.stringify(updateArray));
 
     return res.status(HTTP_OK_STATUS).json(objUser);
   });
