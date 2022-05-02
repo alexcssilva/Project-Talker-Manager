@@ -138,5 +138,5 @@ app.post('/talker',
 
     fs.writeFileSync(fileTalker, JSON.stringify(file.slice(chosenId, 1)));
 
-    return res.status(204).end;
+    return res.status(204).end();
   });
